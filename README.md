@@ -1,5 +1,5 @@
-# Тестовое задание --- Effective Mobile
-
+# Тестовое задание Effective Mobile
+[![CI Pipeline](https://github.com/mldipaxen/effective-mobile-devops/actions/workflows/ci.yml/badge.svg)](https://github.com/mldipaxen/effective-mobile-devops/actions/workflows/ci.yml)
 ## Запуск проекта
 
 ``` bash
