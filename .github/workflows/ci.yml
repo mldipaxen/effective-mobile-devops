@@ -1,0 +1,62 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: backend/Dockerfile
+          failure-threshold: warning
+
+      - name: Validate Nginx config
+        run: |
+          docker run --rm \
+            -v $(pwd)/nginx:/etc/nginx/conf.d:ro \
+            nginx:1.25-alpine nginx -t
+
+      - name: Build and start services
+        run: docker compose up -d --build
+
+      - name: Wait for healthchecks
+        run: sleep 15
+
+      - name: Test application endpoint
+        run: |
+          RESPONSE=$(curl -s http://localhost)
+          if [ "$RESPONSE" = "Hello from Effective Mobile!" ]; then
+            echo "Application test PASSED"
+          else
+            echo "Application test FAILED"
+            echo "Expected: 'Hello from Effective Mobile!'"
+            echo "Got: '$RESPONSE'"
+            exit 1
+          fi
+
+      - name: Verify backend isolation
+        run: |
+          if curl -s --connect-timeout 2 http://localhost:8080 >/dev/null 2>&1; then
+            echo "Isolation test FAILED: backend:8080 is exposed"
+            exit 1
+          else
+            echo "Isolation test PASSED"
+          fi
+
+      - name: Show logs
+        if: always()
+        run: docker compose logs --tail=20
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
