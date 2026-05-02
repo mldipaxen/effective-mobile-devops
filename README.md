@@ -13,12 +13,11 @@ docker compose up -d --build
 ``` bash
 curl http://localhost
 ```
-<img width="1719" height="847" alt="image" src="https://github.com/user-attachments/assets/bc632a59-b896-434d-bcba-d66d7a56a4bc" />
 
 Ожидаемый результат:
 
     Hello from Effective Mobile!
-
+<img width="1719" height="847" alt="image" src="https://github.com/user-attachments/assets/bc632a59-b896-434d-bcba-d66d7a56a4bc" />
 ## Проверка изоляции
 
 ``` bash
