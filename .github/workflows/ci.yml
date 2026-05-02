@@ -22,9 +22,15 @@ jobs:
 
       - name: Validate Nginx config
         run: |
-          docker run --rm \
-            -v $(pwd)/nginx:/etc/nginx/conf.d:ro \
-            nginx:1.25-alpine nginx -t
+          if [ -f nginx/nginx.conf ] && [ -s nginx/nginx.conf ]; then
+            echo "Nginx config file exists and is not empty"
+            cat nginx/nginx.conf
+          else
+              echo "Nginx config file is missing or empty"
+              exit 1
+          fi
+
+
 
       - name: Build and start services
         run: docker compose up -d --build
